@@ -283,6 +283,59 @@ def format_move_history(state: GameState, last_n: int = 10) -> str:
     return "\n".join(lines)
 
 
+def format_stone_positions(state: GameState) -> str:
+    """
+    Format stone positions in an explicit, unambiguous format for LLM parsing.
+    
+    Returns:
+        String listing all stones grouped by color with coordinates
+    """
+    black_stones = []
+    white_stones = []
+    
+    # Collect all stone positions
+    for row in range(state.board_size):
+        for col in range(state.board_size):
+            stone = state.board[row][col]
+            if stone == 'B':
+                coord = coord_to_gtp(row, col, state.board_size)
+                black_stones.append(coord)
+            elif stone == 'W':
+                coord = coord_to_gtp(row, col, state.board_size)
+                white_stones.append(coord)
+    
+    # Sort stones for consistent output
+    black_stones.sort()
+    white_stones.sort()
+    
+    lines = []
+    lines.append("=== Explicit Stone Positions ===")
+    lines.append("")
+    
+    # Black stones
+    if black_stones:
+        lines.append(f"BLACK STONES (X): {len(black_stones)} stones")
+        # Group in lines of 10 for readability
+        for i in range(0, len(black_stones), 10):
+            group = black_stones[i:i+10]
+            lines.append(f"  {', '.join(group)}")
+    else:
+        lines.append("BLACK STONES (X): None")
+    
+    lines.append("")
+    
+    # White stones
+    if white_stones:
+        lines.append(f"WHITE STONES (O): {len(white_stones)} stones")
+        for i in range(0, len(white_stones), 10):
+            group = white_stones[i:i+10]
+            lines.append(f"  {', '.join(group)}")
+    else:
+        lines.append("WHITE STONES (O): None")
+    
+    return "\n".join(lines)
+
+
 def get_game_info(state: GameState) -> Dict[str, Any]:
     """Get summary information about the game."""
     return {
