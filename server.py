@@ -30,6 +30,7 @@ from sgf_reader import (
     board_to_ascii,
     format_move_history,
     get_game_info,
+    coord_to_gtp,
     GameState,
 )
 from katago_client import (
@@ -75,6 +76,31 @@ def get_current_game() -> tuple[GameState, str]:
     
     state = read_sgf_file(sgf_path)
     return state, sgf_path
+
+
+def format_stone_positions(state: GameState) -> str:
+    """
+    Format the explicit stone positions in a clear, LLM-friendly format.
+    
+    Returns a string listing all black and white stones on the board.
+    """
+    black_stones = []
+    white_stones = []
+    
+    for row in range(state.board_size):
+        for col in range(state.board_size):
+            stone = state.board[row][col]
+            if stone == 'B':
+                black_stones.append(coord_to_gtp(row, col, state.board_size))
+            elif stone == 'W':
+                white_stones.append(coord_to_gtp(row, col, state.board_size))
+    
+    lines = []
+    lines.append("=== Stone Positions ===")
+    lines.append(f"Black stones ({len(black_stones)}): {', '.join(black_stones) if black_stones else 'none'}")
+    lines.append(f"White stones ({len(white_stones)}): {', '.join(white_stones) if white_stones else 'none'}")
+    
+    return "\n".join(lines)
 
 
 # ============================================================================
@@ -260,6 +286,10 @@ def get_board_state(sgf_path: Optional[str] = None) -> str:
         
         # Board
         lines.append(board_to_ascii(state))
+        lines.append("")
+        
+        # Explicit stone positions (LLM-friendly)
+        lines.append(format_stone_positions(state))
         lines.append("")
         
         # Recent moves
