@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+katago-env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+debug.log
+test_output.log
+katago_debug.log
+
+# Test outputs
+desktop/
+
+# User-specific configs (users should create their own)
+# Keep example configs
+!example_config/
+
+# KataGo binaries and models (users should download their own)
+*.bin.gz
+katago
+katago.exe
+
+# Temporary files
+*.tmp
+*.bak
+.*.swp
